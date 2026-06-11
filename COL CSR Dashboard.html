@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>COL CSR Dashboard | Wed Jun 10, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@600;700;800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#f0f4f8;--surface:#fff;--border:#dde3ec;--navy:#1a2e4a;--navy2:#243a58;
+  --cyan:#00AEEF;--cyan-bg:#e8f7fd;--text:#1a2e4a;--text2:#445570;--muted:#7a90aa;
+  --green:#0d7a4a;--red:#c0392b;--amber:#b45309;--gold:#b45309;--purple:#6d28d9;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+.top-bar{background:var(--navy);padding:0 32px;display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;border-bottom:4px solid var(--cyan);min-height:90px;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+.top-left{display:flex;align-items:center;gap:20px}
+.brand{color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;letter-spacing:.08em;line-height:1}
+.brand em{color:#fff;font-style:normal}
+.hdivider{width:1px;height:36px;background:rgba(255,255,255,.2)}
+.tab-bar{background:#e8edf4;border-bottom:2px solid var(--border);padding:10px 24px;display:flex;overflow-x:auto;gap:8px}
+.tab{font-size:13px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  padding:10px 22px;cursor:pointer;color:var(--text2);background:#fff;border:2px solid var(--border);
+  border-radius:8px;white-space:nowrap;transition:all .15s;user-select:none}
+.tab:hover{color:var(--navy);border-color:var(--cyan)}
+.tab.active{color:#fff;background:var(--cyan);border-color:var(--cyan);box-shadow:0 2px 10px rgba(0,174,239,.35)}
+.section{display:none;padding:24px 24px 64px}
+.section.active{display:block}
+.sec-lbl{font-size:10.5px;font-weight:800;color:var(--navy2);letter-spacing:.12em;text-transform:uppercase;
+  margin:24px 0 12px;padding-left:10px;border-left:3px solid var(--cyan)}
+.sec-lbl:first-child{margin-top:0}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.mc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;
+  border-left:4px solid var(--cyan);box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:3px}
+.mc.green{border-left-color:var(--green)}.mc.red{border-left-color:var(--red)}
+.mc.amber{border-left-color:var(--amber)}.mc.purple{border-left-color:var(--purple)}
+.mc-lbl{font-size:11px;font-weight:800;color:var(--navy2);text-transform:uppercase;letter-spacing:.06em}
+.mc-val{font-size:28px;font-weight:800;color:var(--navy);font-family:'Barlow Condensed',sans-serif;line-height:1.1}
+.mc-val.green{color:var(--green)}.mc-val.red{color:var(--red)}.mc-val.amber{color:var(--amber)}
+.mc-sub{font-size:11px;color:var(--muted)}.mc-sub.green{color:var(--green)}.mc-sub.red{color:var(--red)}.mc-sub.amber{color:var(--amber)}
+.tw{overflow-x:auto;border:1px solid var(--border);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--navy);color:#fff;padding:10px 12px;font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+td.name{font-weight:600;color:var(--navy)}
+td.r{text-align:right}td.c{text-align:center}
+tr.region-row td{background:#f8fafc;font-weight:700;color:var(--navy2);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;border-bottom:1px solid var(--border)}
+tr.total-row td{background:#f0f4f8;font-weight:700;border-top:2px solid var(--border)}
+.chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.03em;border:1px solid transparent}
+.chi{background:#e0f7fa;color:#006064;border-color:#b2ebf2}
+.chg{background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7}
+.chl{background:#fce4ec;color:#880e4f;border-color:#f48fb1}
+.chm{background:#fff8e1;color:#e65100;border-color:#ffe082}
+.cha{background:#e0f2fe;color:#01579b;border-color:#81d4fa}
+.sbar{display:flex;align-items:center;gap:8px;min-width:120px}
+.sbar-bg{flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:3px}
+.fg{background:var(--green)}.fa{background:var(--amber)}.fr{background:var(--red)}.fc{background:var(--cyan)}
+.sbar-val{font-size:11px;font-weight:700;white-space:nowrap;min-width:40px;text-align:right}
+.spark-val{font-size:10px;font-weight:700;white-space:nowrap}
+.spark-val.green{color:var(--green)}.spark-val.red{color:var(--red)}.spark-val.muted{color:var(--muted)}
+.spark-bar{height:5px;background:#e2e8f0;border-radius:3px;margin:2px 0;overflow:hidden}
+.spark-fill{height:100%;border-radius:3px}
+.spark-fill.green{background:var(--green)}.spark-fill.red{background:var(--red)}
+.spark-pct{font-size:9px;color:var(--muted)}
+.wh-row{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 16px;
+  margin-bottom:8px;display:grid;grid-template-columns:180px 1fr auto;align-items:center;gap:16px;
+  border-left:4px solid var(--cyan)}
+.wh-name{font-weight:700;font-size:13px;color:var(--navy)}
+.rank-1{width:26px;height:26px;border-radius:50%;background:#f59e0b;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:auto}
+.rank-2{width:26px;height:26px;border-radius:50%;background:#94a3b8;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:auto}
+.rank-3{width:26px;height:26px;border-radius:50%;background:#c2410c;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:auto}
+</style></head><body>
+<div class="top-bar">
+  <div class="top-left">
+    <div class="brand">COL <em>AUTO PARTS</em></div>
+    <div class="hdivider"></div>
+    <div style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">CSR Daily Dashboard</div>
+  </div>
+  <div style="text-align:right">
+    <div style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:.04em">Week 24 &middot; Day 3 &middot; Wednesday, June 10, 2026</div>
+    <div style="color:var(--cyan);font-family:'DM Mono',monospace;font-size:11px;margin-top:3px">Prior Day Data: Tue Jun 9 &middot; WTD: Days 1&ndash;2 Confirmed &middot; Internal Use Only</div>
+  </div>
+</div>
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab(this,'summary')">&#128202; Summary</button>
+  <button class="tab" onclick="showTab(this,'plan')">&#127919; Sales to Plan</button>
+  <button class="tab" onclick="showTab(this,'queues')">&#128222; Call Queues</button>
+  <button class="tab" onclick="showTab(this,'reps')">&#127775; Rep Performance</button>
+  <button class="tab" onclick="showTab(this,'addons')">&#127873; Add-Ons</button>
+</div>
+<div class="section active" id="tab-summary"><div class="sec-lbl">Key Metrics &mdash; WTD Week 24 Days 1&ndash;2 (Jun 8&ndash;9) &amp; MTD (Jun 1&ndash;9)</div><div class="metric-grid">
+  <div class="mc amber">
+    <div class="mc-lbl">MTD Total Sales &mdash; Jun 1&ndash;9 (7 of 20 Days)</div>
+    <div class="mc-val amber">$1,164,006</div>
+    <div class="mc-sub amber">Plan $1,320,299 &middot; -$156,293 (-11.8%) vs plan</div>
+  </div>
+  <div class="mc green">
+    <div class="mc-lbl">WTD Calls Answered &mdash; Days 1&ndash;2</div>
+    <div class="mc-val green">2,337</div>
+    <div class="mc-sub">Extension serviced calls &middot; Jun 8&ndash;9</div>
+  </div>
+  <div class="mc green">
+    <div class="mc-lbl">Team Gross Margin &mdash; WTD Phone Reps</div>
+    <div class="mc-val green">60.3%</div>
+    <div class="mc-sub">Coaching flags: <span style="color:var(--red)">ManuelSe: 46.6% disc</span> &middot; <span style="color:var(--red)">IsaacG: 35.3% disc</span></div>
+  </div>
+</div>
+<div class="sec-lbl">&#128205; Warehouse Performance &mdash; MTD (Jun 1&ndash;9)</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">Fresno</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fr" style="width:56.38%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$43,331</span>
+      <span style="color:var(--muted)"> / $76,856 &mdash; </span>
+      <span style="color:var(--red);font-weight:700">-43.6%</span>
+    </span>
+  </div>
+</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">Hayward</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fr" style="width:72.49%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$419,430</span>
+      <span style="color:var(--muted)"> / $578,631 &mdash; </span>
+      <span style="color:var(--red);font-weight:700">-27.5%</span>
+    </span>
+  </div>
+</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">Santa Rosa</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fr" style="width:83.59%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$68,916</span>
+      <span style="color:var(--muted)"> / $82,443 &mdash; </span>
+      <span style="color:var(--red);font-weight:700">-16.4%</span>
+    </span>
+  </div>
+</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">Albuquerque</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fr" style="width:83.61%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$108,885</span>
+      <span style="color:var(--muted)"> / $130,228 &mdash; </span>
+      <span style="color:var(--red);font-weight:700">-16.4%</span>
+    </span>
+  </div>
+</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">Sacramento</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fa" style="width:91.13%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$96,297</span>
+      <span style="color:var(--muted)"> / $105,668 &mdash; </span>
+      <span style="color:var(--red);font-weight:700">-8.9%</span>
+    </span>
+  </div>
+</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">San Diego</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fa" style="width:94.39%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$155,655</span>
+      <span style="color:var(--muted)"> / $164,912 &mdash; </span>
+      <span style="color:var(--red);font-weight:700">-5.6%</span>
+    </span>
+  </div>
+</div><div class="wh-row">
+  <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px">Santa Fe Springs &#10003;</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;background:#e2e8f0;border-radius:4px;height:14px;overflow:hidden">
+      <div class="sbar-fill fg" style="width:100.00%;height:14px;border-radius:4px"></div>
+    </div>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">
+      <span style="color:var(--navy);font-weight:600">$271,312</span>
+      <span style="color:var(--muted)"> / $258,418 &mdash; </span>
+      <span style="color:var(--green);font-weight:700">+5.0%</span>
+    </span>
+  </div>
+</div><div class="sec-lbl" style="margin-top:24px">&#128222; 160-Call WTD Goal &mdash; Week 24 Days 1&ndash;2</div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:16px">
+  <div style="display:flex;align-items:center;gap:24px;margin-bottom:14px;flex-wrap:wrap">
+    <div><div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">WTD Target</div>
+    <div style="font-size:20px;font-weight:800;color:var(--navy)">&ge;160 calls <span style="font-size:13px;font-weight:400;color:var(--muted)">(80/day &times; 2)</span></div></div>
+    <div><div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Hit Goal</div>
+    <div style="font-size:20px;font-weight:800;color:var(--green)">6 of 14</div></div>
+  </div>
+  <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">&#10003; Hit &ge;160 &mdash; +5pt Bonus</div>
+  <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">
+    <span class="chip chi" style="font-size:11px">MatthewO &mdash; 283</span><span class="chip chi" style="font-size:11px">IvanB &mdash; 223</span><span class="chip chi" style="font-size:11px">MarioGO &mdash; 190</span><span class="chip chi" style="font-size:11px">ZulemaA &mdash; 175</span><span class="chip chi" style="font-size:11px">LuisP &mdash; 172</span><span class="chip chi" style="font-size:11px">PaulinaN &mdash; 172</span>
+  </div>
+  <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">&#9660; Below 160</div>
+  <div style="display:flex;flex-wrap:wrap;gap:5px">
+    <span class="chip chm" style="font-size:11px">JoannaZ &mdash; 158</span><span class="chip chm" style="font-size:11px">IsaacG &mdash; 124</span><span class="chip chm" style="font-size:11px">ManuelSe &mdash; 124</span><span class="chip chm" style="font-size:11px">KeinaJ &mdash; 102</span><span class="chip chm" style="font-size:11px">FrankieL &mdash; 96</span><span class="chip chm" style="font-size:11px">ArturoS &mdash; 81</span><span class="chip chm" style="font-size:11px">OmarR &mdash; 81</span><span class="chip chm" style="font-size:11px">DavidO &mdash; 80</span>
+  </div>
+</div>
+<div class="sec-lbl">&#9888;&#65039; Coaching Flags &mdash; WTD High Discount (Phone Reps &ge;30%)</div><div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:20px"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:24px">&#9888;&#65039;</span><div><div style="font-weight:700;font-size:14px;color:var(--red)">ManuelSe</div><div style="font-size:12px;color:var(--muted)">46.6% WTD discount &mdash; above 30% threshold. Review pricing with rep.</div></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:24px">&#9888;&#65039;</span><div><div style="font-weight:700;font-size:14px;color:var(--red)">IsaacG</div><div style="font-size:12px;color:var(--muted)">35.3% WTD discount &mdash; above 30% threshold. Review pricing with rep.</div></div></div></div></div><div class="section" id="tab-plan"><div class="sec-lbl">June MTD Summary &mdash; Through Jun 9 (Week 24 Days 1&ndash;3 | 7 Days)</div><div class="metric-grid">
+  <div class="mc"><div class="mc-lbl">MTD Plan (7 Days)</div><div class="mc-val">$1,320,299</div><div class="mc-sub">Jun 1&ndash;9 plan target</div></div>
+  <div class="mc red"><div class="mc-lbl">MTD Actual</div><div class="mc-val red">$1,164,006</div><div class="mc-sub red">-$156,294 below plan</div></div>
+  <div class="mc red"><div class="mc-lbl">MTD Variance %</div><div class="mc-val red">-11.8%</div><div class="mc-sub red">Jun 9: -12.3% vs plan</div></div>
+  <div class="mc"><div class="mc-lbl">Full Month Plan</div><div class="mc-val">$3,875,676</div><div class="mc-sub">20 business days</div></div>
+  <div class="mc red"><div class="mc-lbl">Jun 9 vs Plan</div><div class="mc-val red">-12.3%</div><div class="mc-sub red">$184,985 vs $210,818</div></div>
+  <div class="mc"><div class="mc-lbl">35% of Month Done</div><div class="mc-val" style="font-size:36px">7 of 20</div><div class="mc-sub">13 days remaining</div></div>
+</div>
+<div class="sec-lbl">By Region &amp; Location &mdash; MTD Jun 1&ndash;9</div><div class="tw"><table><thead><tr><th>Region / Location</th><th class="r">MTD Plan</th><th class="r">MTD Actual</th><th class="r">Variance $</th><th style="min-width:140px">Variance %</th><th class="c">Status</th></tr></thead><tbody><tr class="region-row"><td colspan="6">NorCal Region</td></tr><tr style="background:#f0f4f8"><td class="name" style="padding-left:12px;font-size:11px">Region Total</td><td class="r">$843,598</td><td class="r"><strong>$627,974</strong></td><td class="r" style="color:var(--red)">-215,624</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:74.4%"></div></div><div class="sbar-val" style="color:var(--red)">74.4%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr><td class="name" style="padding-left:28px">Hayward</td><td class="r">$578,631</td><td class="r">$419,430</td><td class="r" style="color:var(--red)">-159,201</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:72.5%"></div></div><div class="sbar-val" style="color:var(--red)">72.5%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr><td class="name" style="padding-left:28px">Sacramento</td><td class="r">$105,668</td><td class="r">$96,297</td><td class="r" style="color:var(--amber)">-9,371</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:91.1%"></div></div><div class="sbar-val" style="color:var(--amber)">91.1%</div></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name" style="padding-left:28px">Santa Rosa</td><td class="r">$82,443</td><td class="r">$68,916</td><td class="r" style="color:var(--red)">-13,527</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:83.6%"></div></div><div class="sbar-val" style="color:var(--red)">83.6%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr><td class="name" style="padding-left:28px">Fresno</td><td class="r">$76,856</td><td class="r">$43,331</td><td class="r" style="color:var(--red)">-33,525</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:56.4%"></div></div><div class="sbar-val" style="color:var(--red)">56.4%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr class="region-row"><td colspan="6">SoCal Region</td></tr><tr style="background:#f0f4f8"><td class="name" style="padding-left:12px;font-size:11px">Region Total</td><td class="r">$423,330</td><td class="r"><strong>$426,967</strong></td><td class="r" style="color:var(--green)">++3,637</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fg" style="width:100.0%"></div></div><div class="sbar-val" style="color:var(--green)">100.9%</div></div></td><td class="c"><span class="chip chg">ON PLAN</span></td></tr><tr><td class="name" style="padding-left:28px">Santa Fe Springs</td><td class="r">$258,418</td><td class="r">$271,312</td><td class="r" style="color:var(--green)">+12,894</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fg" style="width:100.0%"></div></div><div class="sbar-val" style="color:var(--green)">105.0%</div></div></td><td class="c"><span class="chip chi">ABOVE</span></td></tr><tr><td class="name" style="padding-left:28px">San Diego</td><td class="r">$164,912</td><td class="r">$155,655</td><td class="r" style="color:var(--amber)">-9,257</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:94.4%"></div></div><div class="sbar-val" style="color:var(--amber)">94.4%</div></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr class="region-row"><td colspan="6">Mountain West Region</td></tr><tr style="background:#f0f4f8"><td class="name" style="padding-left:12px;font-size:11px">Region Total</td><td class="r">$130,228</td><td class="r"><strong>$108,885</strong></td><td class="r" style="color:var(--red)">-21,343</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:83.6%"></div></div><div class="sbar-val" style="color:var(--red)">83.6%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr><td class="name" style="padding-left:28px">Albuquerque</td><td class="r">$130,228</td><td class="r">$108,885</td><td class="r" style="color:var(--red)">-21,343</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:83.6%"></div></div><div class="sbar-val" style="color:var(--red)">83.6%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr class="total-row"><td>TOTAL COL</td><td class="r">$1,320,299</td><td class="r">$1,164,006</td><td class="r" style="color:var(--red)">-$156,293</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:88.2%"></div></div><div class="sbar-val" style="color:var(--amber)">88.2%</div></div></td><td class="c"><span class="chip chl">-11.8%</span></td></tr></tbody></table></div><div class="sec-lbl">Prior Day &mdash; Tue Jun 9 Performance by Location</div><div class="tw"><table><thead><tr><th>Location</th><th class="r">Daily Plan</th><th class="r">Jun 9 Actual</th><th class="r">Variance $</th><th style="min-width:140px">Variance %</th><th class="c">Status</th></tr></thead><tbody><tr class="region-row"><td colspan="6">NorCal Region</td></tr><tr><td class="name" style="padding-left:28px">Hayward</td><td class="r">$97,090</td><td class="r"><strong>$66,077</strong></td><td class="r" style="color:var(--red)">-31,013</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:68.1%"></div></div><div class="sbar-val" style="color:var(--red)">68.1%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr><td class="name" style="padding-left:28px">Sacramento</td><td class="r">$14,864</td><td class="r"><strong>$12,945</strong></td><td class="r" style="color:var(--amber)">-1,919</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:87.1%"></div></div><div class="sbar-val" style="color:var(--amber)">87.1%</div></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name" style="padding-left:28px">Santa Rosa</td><td class="r">$15,033</td><td class="r"><strong>$10,504</strong></td><td class="r" style="color:var(--red)">-4,529</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:69.9%"></div></div><div class="sbar-val" style="color:var(--red)">69.9%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr><td class="name" style="padding-left:28px">Fresno</td><td class="r">$10,860</td><td class="r"><strong>$6,464</strong></td><td class="r" style="color:var(--red)">-4,396</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:59.5%"></div></div><div class="sbar-val" style="color:var(--red)">59.5%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr class="region-row"><td colspan="6">SoCal Region</td></tr><tr><td class="name" style="padding-left:28px">Santa Fe Springs</td><td class="r">$33,309</td><td class="r"><strong>$47,322</strong></td><td class="r" style="color:var(--green)">+14,013</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fg" style="width:100.0%"></div></div><div class="sbar-val" style="color:var(--green)">142.1%</div></div></td><td class="c"><span class="chip chi">ABOVE</span></td></tr><tr><td class="name" style="padding-left:28px">San Diego</td><td class="r">$28,525</td><td class="r"><strong>$24,241</strong></td><td class="r" style="color:var(--red)">-4,284</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:85.0%"></div></div><div class="sbar-val" style="color:var(--red)">85.0%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr class="region-row"><td colspan="6">Mountain West</td></tr><tr><td class="name" style="padding-left:28px">Albuquerque</td><td class="r">$21,997</td><td class="r"><strong>$17,431</strong></td><td class="r" style="color:var(--red)">-4,566</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:79.2%"></div></div><div class="sbar-val" style="color:var(--red)">79.2%</div></div></td><td class="c"><span class="chip chl">BEHIND</span></td></tr><tr class="total-row"><td>TOTAL Jun 9</td><td class="r">$210,818</td><td class="r"><strong>$184,985</strong></td><td class="r" style="color:var(--red)">-$25,833</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:87.7%"></div></div><div class="sbar-val" style="color:var(--amber)">87.7%</div></div></td><td class="c"><span class="chip chl">-12.3%</span></td></tr></tbody></table></div><div class="sec-lbl">June Daily Calendar &mdash; Plan vs Actual</div><div class="tw"><table><thead><tr><th>Date</th><th class="r">Daily Plan</th><th class="r">Actual</th><th class="r">Variance</th><th style="min-width:130px">Variance %</th><th class="c">Status</th></tr></thead><tbody><tr class="region-row"><td colspan="6">Week 23 (Jun 1&ndash;5)</td></tr><tr><td class="name" style="color:var(--text2)">Mon Jun 01 &#10003;</td><td class="r">$180,990</td><td class="r">$145,905</td><td class="r" style="color:var(--red)">-35,085</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fr" style="width:80.6%"></div></div><div class="sbar-val" style="color:var(--red)">80.6%</div></div></td><td class="c"><span class="chip chl">MISS</span></td></tr><tr><td class="name" style="color:var(--text2)">Tue Jun 02 &#10003;</td><td class="r">$212,429</td><td class="r">$195,579</td><td class="r" style="color:var(--red)">-16,850</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:92.1%"></div></div><div class="sbar-val" style="color:var(--amber)">92.1%</div></div></td><td class="c"><span class="chip chl">MISS</span></td></tr><tr><td class="name" style="color:var(--text2)">Wed Jun 03 &#10003;</td><td class="r">$213,937</td><td class="r">$184,846</td><td class="r" style="color:var(--red)">-29,091</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:86.4%"></div></div><div class="sbar-val" style="color:var(--amber)">86.4%</div></div></td><td class="c"><span class="chip chl">MISS</span></td></tr><tr><td class="name" style="color:var(--text2)">Thu Jun 04 &#10003;</td><td class="r">$176,855</td><td class="r">$164,760</td><td class="r" style="color:var(--amber)">-12,095</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:93.2%"></div></div><div class="sbar-val" style="color:var(--amber)">93.2%</div></div></td><td class="c"><span class="chip chm">CLOSE</span></td></tr><tr><td class="name" style="color:var(--text2)">Fri Jun 05 &#10003;</td><td class="r">$165,215</td><td class="r">$149,225</td><td class="r" style="color:var(--red)">-15,990</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:90.3%"></div></div><div class="sbar-val" style="color:var(--amber)">90.3%</div></div></td><td class="c"><span class="chip chl">MISS</span></td></tr><tr class="region-row"><td colspan="6">Week 24 (Jun 8&ndash;12)</td></tr><tr><td class="name" style="color:var(--text2)">Mon Jun 08 &#10003;</td><td class="r">$160,056</td><td class="r">$138,706</td><td class="r" style="color:var(--red)">-21,350</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:86.7%"></div></div><div class="sbar-val" style="color:var(--amber)">86.7%</div></div></td><td class="c"><span class="chip chl">MISS</span></td></tr><tr><td class="name" style="color:var(--text2)">Tue Jun 09 &#10003;</td><td class="r">$210,818</td><td class="r">$184,985</td><td class="r" style="color:var(--red)">-25,833</td><td><div class="sbar"><div class="sbar-bg"><div class="sbar-fill fa" style="width:87.7%"></div></div><div class="sbar-val" style="color:var(--amber)">87.7%</div></div></td><td class="c"><span class="chip chl">MISS</span></td></tr><tr style="background:#e0f2fe"><td class="name" style="color:var(--cyan)">Wed Jun 10 &#9733; TODAY</td><td class="r">$208,100</td><td class="r" style="color:var(--muted)">Pending</td><td class="r" style="color:var(--muted)">—</td><td style="color:var(--muted);font-size:11px">In progress</td><td class="c"><span class="chip cha">TBD</span></td></tr><tr><td class="name" style="color:var(--muted)">Thu Jun 11</td><td class="r">$203,425</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td style="color:var(--muted);font-size:11px">—</td><td class="c"><span class="chip cha">TBD</span></td></tr><tr><td class="name" style="color:var(--muted)">Fri Jun 12</td><td class="r">$181,370</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td style="color:var(--muted);font-size:11px">—</td><td class="c"><span class="chip cha">TBD</span></td></tr><tr class="region-row"><td colspan="6">Week 25 (Jun 15&ndash;19) &amp; Week 26 (Jun 22&ndash;26)</td></tr><tr><td class="name" style="color:var(--muted)">Jun 15&ndash;19 (Wk 25)</td><td class="r">$976,567</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td style="color:var(--muted);font-size:11px">—</td><td class="c"><span class="chip cha">TBD</span></td></tr><tr><td class="name" style="color:var(--muted)">Jun 22&ndash;26 (Wk 26)</td><td class="r">$985,914</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td style="color:var(--muted);font-size:11px">—</td><td class="c"><span class="chip cha">TBD</span></td></tr><tr class="total-row"><td>FULL MONTH</td><td class="r">$3,875,676</td><td class="r">$1,164,006</td><td class="r" style="color:var(--muted)">13 days pending</td><td style="font-size:11px;color:var(--muted)">35% complete</td><td class="c"></td></tr></tbody></table></div></div><div class="section" id="tab-queues"><div class="sec-lbl">Call Queue Performance &mdash; Week 24 Days 1&ndash;2 Combined (Jun 8&ndash;9)</div>
+<div class="tw"><table><thead><tr><th>Queue</th><th class="r">Received</th><th class="r">Answered</th><th class="r">Unanswered</th><th class="r">Unanswered %</th><th class="r">Service Rate</th><th class="c">Status</th></tr></thead><tbody><tr><td class="name">6190 MoWest Sales</td><td class="r">250</td><td class="r">209</td><td class="r">41</td><td class="r" style="color:var(--amber)">16.4%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fa" style="width:83.6%;height:8px"></div></div><span style="color:var(--amber);font-weight:700;font-size:12px;white-space:nowrap">83.6%</span></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name">6650 SoCal Sales</td><td class="r">1,017</td><td class="r">694</td><td class="r">323</td><td class="r" style="color:var(--red)">31.8%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fr" style="width:68.2%;height:8px"></div></div><span style="color:var(--red);font-weight:700;font-size:12px;white-space:nowrap">68.2%</span></div></td><td class="c"><span class="chip chl">NEEDS ATTN</span></td></tr><tr><td class="name">7100 NorCal Sales</td><td class="r">864</td><td class="r">731</td><td class="r">133</td><td class="r" style="color:var(--amber)">15.4%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fa" style="width:84.6%;height:8px"></div></div><span style="color:var(--amber);font-weight:700;font-size:12px;white-space:nowrap">84.6%</span></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name">7800 Global Overflow</td><td class="r">455</td><td class="r">423</td><td class="r">32</td><td class="r" style="color:var(--green)">7.0%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fg" style="width:93.0%;height:8px"></div></div><span style="color:var(--green);font-weight:700;font-size:12px;white-space:nowrap">93.0%</span></div></td><td class="c"><span class="chip chi">ON TARGET</span></td></tr><tr class="total-row"><td>ALL QUEUES</td><td class="r">2,586</td><td class="r">2,057</td><td class="r">529</td><td class="r" style="color:var(--red)">20.5%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fr" style="width:79.5%;height:8px"></div></div><span style="color:var(--red);font-weight:700;font-size:12px;white-space:nowrap">79.5%</span></div></td><td class="c"><span class="chip chl">NEEDS ATTN</span></td></tr></tbody></table></div><div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;margin-bottom:16px">&#9888; Overall 2-day service rate 79.5% &mdash; below 80% threshold. SoCal queue (6650) needs attention at 68.2%.</div><div class="sec-lbl">Call Queue Performance &mdash; Jun 8 (Monday &middot; Day 1)</div>
+<div class="tw"><table><thead><tr><th>Queue</th><th class="r">Received</th><th class="r">Answered</th><th class="r">Unanswered</th><th class="r">Unanswered %</th><th class="r">Service Rate</th><th class="c">Status</th></tr></thead><tbody><tr><td class="name">6190 MoWest Sales</td><td class="r">142</td><td class="r">117</td><td class="r">25</td><td class="r" style="color:var(--amber)">17.6%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fa" style="width:82.4%;height:8px"></div></div><span style="color:var(--amber);font-weight:700;font-size:12px;white-space:nowrap">82.4%</span></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name">6650 SoCal Sales</td><td class="r">522</td><td class="r">284</td><td class="r">238</td><td class="r" style="color:var(--red)">45.6%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fr" style="width:54.4%;height:8px"></div></div><span style="color:var(--red);font-weight:700;font-size:12px;white-space:nowrap">54.4%</span></div></td><td class="c"><span class="chip chl">NEEDS ATTN</span></td></tr><tr><td class="name">7100 NorCal Sales</td><td class="r">435</td><td class="r">363</td><td class="r">72</td><td class="r" style="color:var(--amber)">16.6%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fa" style="width:83.4%;height:8px"></div></div><span style="color:var(--amber);font-weight:700;font-size:12px;white-space:nowrap">83.4%</span></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name">7800 Global Overflow</td><td class="r">306</td><td class="r">278</td><td class="r">28</td><td class="r" style="color:var(--green)">9.2%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fg" style="width:90.8%;height:8px"></div></div><span style="color:var(--green);font-weight:700;font-size:12px;white-space:nowrap">90.8%</span></div></td><td class="c"><span class="chip chi">ON TARGET</span></td></tr><tr class="total-row"><td>ALL QUEUES</td><td class="r">1,405</td><td class="r">1,042</td><td class="r">363</td><td class="r" style="color:var(--red)">25.8%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fr" style="width:74.2%;height:8px"></div></div><span style="color:var(--red);font-weight:700;font-size:12px;white-space:nowrap">74.2%</span></div></td><td class="c"><span class="chip chl">NEEDS ATTN</span></td></tr></tbody></table></div><div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;margin-bottom:16px">&#9888; Jun 8 overall service rate 74.2%. SoCal critical &mdash; only 54.4% answered.</div><div class="sec-lbl">Call Queue Performance &mdash; Jun 9 (Tuesday &middot; Day 2)</div>
+<div class="tw"><table><thead><tr><th>Queue</th><th class="r">Received</th><th class="r">Answered</th><th class="r">Unanswered</th><th class="r">Unanswered %</th><th class="r">Service Rate</th><th class="c">Status</th></tr></thead><tbody><tr><td class="name">6190 MoWest Sales</td><td class="r">108</td><td class="r">92</td><td class="r">16</td><td class="r" style="color:var(--green)">14.8%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fg" style="width:85.2%;height:8px"></div></div><span style="color:var(--green);font-weight:700;font-size:12px;white-space:nowrap">85.2%</span></div></td><td class="c"><span class="chip chg">GOOD</span></td></tr><tr><td class="name">6650 SoCal Sales</td><td class="r">495</td><td class="r">410</td><td class="r">85</td><td class="r" style="color:var(--amber)">17.2%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fa" style="width:82.8%;height:8px"></div></div><span style="color:var(--amber);font-weight:700;font-size:12px;white-space:nowrap">82.8%</span></div></td><td class="c"><span class="chip chm">WATCH</span></td></tr><tr><td class="name">7100 NorCal Sales</td><td class="r">429</td><td class="r">368</td><td class="r">61</td><td class="r" style="color:var(--green)">14.2%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fg" style="width:85.8%;height:8px"></div></div><span style="color:var(--green);font-weight:700;font-size:12px;white-space:nowrap">85.8%</span></div></td><td class="c"><span class="chip chg">GOOD</span></td></tr><tr><td class="name">7800 Global Overflow</td><td class="r">149</td><td class="r">145</td><td class="r">4</td><td class="r" style="color:var(--green)">2.7%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fg" style="width:97.3%;height:8px"></div></div><span style="color:var(--green);font-weight:700;font-size:12px;white-space:nowrap">97.3%</span></div></td><td class="c"><span class="chip chi">ON TARGET</span></td></tr><tr class="total-row"><td>ALL QUEUES</td><td class="r">1,181</td><td class="r">1,015</td><td class="r">166</td><td class="r" style="color:var(--green)">14.1%</td><td><div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="flex:1;background:#e2e8f0;border-radius:3px;height:8px;overflow:hidden"><div class="sbar-fill fg" style="width:85.9%;height:8px"></div></div><span style="color:var(--green);font-weight:700;font-size:12px;white-space:nowrap">85.9%</span></div></td><td class="c"><span class="chip chg">GOOD</span></td></tr></tbody></table></div></div><div class="section" id="tab-reps"><div class="sec-lbl">Rep Performance Score &mdash; WTD Week 24 Days 1&ndash;2 (Ranked)</div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px">
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px">
+    <span style="background:#e0f2fe;color:#0369a1;font-weight:700;padding:3px 10px;border-radius:4px">$ Sold &mdash; 30 pts</span>
+    <span style="color:var(--muted)">+</span>
+    <span style="background:#dcfce7;color:#15803d;font-weight:700;padding:3px 10px;border-radius:4px">GM% &mdash; 25 pts</span>
+    <span style="color:var(--muted)">+</span>
+    <span style="background:#fef3c7;color:#92400e;font-weight:700;padding:3px 10px;border-radius:4px">Conv% &mdash; 25 pts</span>
+    <span style="color:var(--muted)">+</span>
+    <span style="background:#fee2e2;color:#9a3412;font-weight:700;padding:3px 10px;border-radius:4px">UPT &mdash; 15 pts</span>
+    <span style="color:var(--muted)">+</span>
+    <span style="background:#ede9fe;color:#6d28d9;font-weight:700;padding:3px 10px;border-radius:4px">&ge;160 WTD Calls &mdash; +5 pts</span>
+    <span style="color:var(--muted);font-size:11px">= 100 pts max</span>
+  </div>
+  <div style="color:var(--muted);font-size:11px">
+    WTD target: $10,600 (3-day) &middot; 
+    Max sold: $21,667.05 &middot; Max GM: 68.0% &middot; Max conv: 67.7% &middot; Max UPT: 2.66 &middot;
+    Phone reps: 15 &middot; Non-phone (no conv pts): ApolonioA, ChristianH, CynthiaP, JacquelineS, JoseA
+  </div>
+</div>
+<div class="tw"><table><thead><tr><th style="width:36px">#</th><th>Rep</th><th class="r">Score</th><th style="min-width:130px">Breakdown</th><th class="r">$ WTD Sold</th><th style="min-width:110px">vs Target</th><th class="r">WTD Calls</th><th class="r">GM%</th><th class="r">Conv%</th><th class="r">Disc%</th><th class="r">UPT</th><th class="c">&ge;160</th></tr></thead><tbody><tr style="background:#f0fdf4">
+  <td style="text-align:center"><div class="rank-1">1</div></td>
+  <td class="name">MatthewO</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--green)">88.9</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:42.0px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.8px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:31.0px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:13.7px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$21,667.05</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$11,067</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">204%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">283</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">59.8%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">59.9%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">11.3%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.73</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="background:#eff6ff">
+  <td style="text-align:center"><div class="rank-2">2</div></td>
+  <td class="name">LuisP</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--green)">84.7</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:30.5px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.7px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:35.0px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:15.5px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$15,721.93</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$5,122</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">148%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">172</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">59.6%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">67.7%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">9.5%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.96</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="background:#fffbeb">
+  <td style="text-align:center"><div class="rank-3">3</div></td>
+  <td class="name">ZulemaA</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--green)">84.7</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:41.3px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:31.6px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:25.2px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:13.6px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$21,284.51</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$10,685</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">201%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">175</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">61.3%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">48.7%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">17.9%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.72</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">4</span></td>
+  <td class="name">IvanB</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">76.4</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:25.9px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.5px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:29.1px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:14.5px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$13,381.74</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$2,782</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">126%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">223</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">59.2%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">56.2%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">10.0%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.84</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">5</span></td>
+  <td class="name">MarioGO</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">69.3</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:16.5px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:33.7px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:27.7px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:12.2px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$8,498.88</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$2,101</div><div class="spark-bar"><div class="spark-fill red" style="width:80%"></div></div><div class="spark-pct">80%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">190</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">65.5%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">53.5%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">5.2%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.55</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">6</span></td>
+  <td class="name">IsaacG</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">69.3</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:25.2px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.7px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:29.4px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:11.8px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$13,008.02</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$2,408</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">123%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">124</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">59.7%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">56.8%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">35.3%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.49</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">7</span></td>
+  <td class="name">FrankieL</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">68.6</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:17.5px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.9px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:31.2px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:16.5px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$9,044.67</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$1,555</div><div class="spark-bar"><div class="spark-fill red" style="width:85%"></div></div><div class="spark-pct">85%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">96</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">60.0%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">60.3%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">23.4%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">2.09</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">8</span></td>
+  <td class="name">PaulinaN</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">65.9</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:13.1px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:35.0px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:24.8px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:12.3px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$6,775.03</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$3,825</div><div class="spark-bar"><div class="spark-fill red" style="width:64%"></div></div><div class="spark-pct">64%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">172</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">68.0%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">47.9%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">0.7%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.56</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">9</span></td>
+  <td class="name">JoannaZ</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">62.8</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:15.4px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:28.3px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:31.8px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:12.3px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$7,958.23</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$2,642</div><div class="spark-bar"><div class="spark-fill red" style="width:75%"></div></div><div class="spark-pct">75%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">158</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">55.0%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">61.6%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">14.2%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.56</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">10</span></td>
+  <td class="name">ManuelSe</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--cyan)">61.3</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:17.8px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.5px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:25.6px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:11.9px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$9,197.15</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$1,403</div><div class="spark-bar"><div class="spark-fill red" style="width:87%"></div></div><div class="spark-pct">87%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">124</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">59.2%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">49.5%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--red)">46.6%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.51</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">11</span></td>
+  <td class="name">ArturoS</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--amber)">58.9</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:9.6px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:30.8px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:30.0px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:12.0px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$4,938.72</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$5,661</div><div class="spark-bar"><div class="spark-fill red" style="width:47%"></div></div><div class="spark-pct">47%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">81</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">59.9%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">58.1%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">15.7%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.52</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">12</span></td>
+  <td class="name">KeinaJ</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--amber)">55.1</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:9.5px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:29.9px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:26.2px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:11.6px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$4,916.39</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$5,684</div><div class="spark-bar"><div class="spark-fill red" style="width:46%"></div></div><div class="spark-pct">46%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">102</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">58.1%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">50.6%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">11.9%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.47</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">13</span></td>
+  <td class="name">OmarR</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--amber)">54.8</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:11.0px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:28.5px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:24.7px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:12.6px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$5,663.24</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$4,937</div><div class="spark-bar"><div class="spark-fill red" style="width:53%"></div></div><div class="spark-pct">53%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">81</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">55.3%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">47.8%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">17.2%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.60</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">14</span></td>
+  <td class="name">CynthiaP</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--amber)">53.1</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:26.0px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:27.2px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:21.0px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$13,436.90</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$2,837</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">127%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">50</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--red)">52.9%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--text)">18.9%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">2.66</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">15</span></td>
+  <td class="name">DavidO</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--amber)">52.9</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:4.7px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:32.4px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:24.8px;height:10px;background:#f59e0b;border-radius:2px"></div><div style="width:12.2px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$2,436.20</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$8,164</div><div class="spark-bar"><div class="spark-fill red" style="width:23%"></div></div><div class="spark-pct">23%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">80</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">63.0%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">47.9%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">8.6%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.54</td>
+  <td style="text-align:center"><span class="chip chl" style="font-size:10px">NO</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">16</span></td>
+  <td class="name">JacquelineS</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--amber)">50.5</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:21.3px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:28.7px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:13.7px;height:10px;background:#ef4444;border-radius:2px"></div><div style="width:7.0px;height:10px;background:#8b5cf6;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$11,008.28</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val green">+$408</div><div class="spark-bar"><div class="spark-fill green" style="width:100%"></div></div><div class="spark-pct">104%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">226</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--amber)">55.7%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">6.9%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.74</td>
+  <td style="text-align:center"><span class="chip chi" style="font-size:10px">&#10003; YES</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">17</span></td>
+  <td class="name">ApolonioA</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--red)">32.2</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:9.8px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:27.0px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:8.2px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$5,051.41</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$5,549</div><div class="spark-bar"><div class="spark-fill red" style="width:48%"></div></div><div class="spark-pct">48%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--red)">52.5%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--red)">47.7%</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">1.04</td>
+  <td style="text-align:center"><span style="color:var(--muted);font-size:11px">—</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">18</span></td>
+  <td class="name">TerenceR</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--red)">29.5</td>
+  <td><div style="display:flex;gap:1px;align-items:center"><div style="width:0.7px;height:10px;background:#0ea5e9;border-radius:2px"></div><div style="width:24.9px;height:10px;background:#22c55e;border-radius:2px"></div><div style="width:15.8px;height:10px;background:#ef4444;border-radius:2px"></div></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">$365.08</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val red">-$10,235</div><div class="spark-bar"><div class="spark-fill red" style="width:3%"></div></div><div class="spark-pct">3%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--red)">48.3%</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--muted)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">—</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">2.00</td>
+  <td style="text-align:center"><span style="color:var(--muted);font-size:11px">—</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">19</span></td>
+  <td class="name">JoseA</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--red)">0.0</td>
+  <td><div style="display:flex;gap:1px;align-items:center"></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">—</td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val muted">—</div><div class="spark-bar"></div><div class="spark-pct muted">0%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--muted)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--muted)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">—</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">—</td>
+  <td style="text-align:center"><span style="color:var(--muted);font-size:11px">—</span></td>
+</tr><tr style="">
+  <td style="text-align:center"><span style="color:var(--muted);font-size:12px">20</span></td>
+  <td class="name">ChristianH</td>
+  <td style="text-align:right;font-size:20px;font-weight:800;color:var(--red)">0.0</td>
+  <td><div style="display:flex;gap:1px;align-items:center"></div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px"><span style="color:var(--red)">-$1,246.56</span></td>
+  <td style="padding:4px 8px;min-width:110px"><div class="spark-val muted">—</div><div class="spark-bar"></div><div class="spark-pct muted">0%</div></td>
+  <td style="text-align:right;font-family:'DM Mono',monospace;font-size:12px">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--muted)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--muted)">—</td>
+  <td style="text-align:right;font-size:12px;font-weight:600;color:var(--green)">—</td>
+  <td style="text-align:right;font-size:12px;font-family:'DM Mono',monospace">—</td>
+  <td style="text-align:center"><span style="color:var(--muted);font-size:11px">—</span></td>
+</tr></tbody></table></div><div style="font-size:10px;color:var(--muted);margin-top:8px">
+  Source: SalesTeamReporting_IndividualLevel_20260609.xlsx &mdash; Col C (WTD), Days 1&ndash;2 (Jun 8&ndash;9) &middot;
+  Calls: extension_serviced_calls_totals (Jun 8+Jun 9) &middot; Day 3 (Jun 10) results pending &middot; Scores update daily
+</div></div><div class="section" id="tab-addons"><div class="sec-lbl">Add-On Summary &mdash; WTD Week 24 Days 1&ndash;2 (Jun 8&ndash;9)</div>
+<div class="metric-grid">
+  <div class="mc green">
+    <div class="mc-lbl">&#129399; Gloves Sold</div>
+    <div class="mc-val green" style="color:var(--green)">5</div>
+    <div class="mc-sub">CynthiaP: 2 &middot; IsaacG: 2 &middot; ManuelSe: 1</div>
+  </div>
+  <div class="mc green">
+    <div class="mc-lbl">&#129531; Towels Sold</div>
+    <div class="mc-val green" style="color:var(--green)">3</div>
+    <div class="mc-sub">CynthiaP: 3</div>
+  </div>
+  <div class="mc green">
+    <div class="mc-lbl">&#127915; Coupons Sold</div>
+    <div class="mc-val green" style="color:var(--green)">5</div>
+    <div class="mc-sub">CynthiaP: 5</div>
+  </div>
+  <div class="mc green">
+    <div class="mc-lbl">WTD Total Add-Ons</div>
+    <div class="mc-val green">13</div>
+    <div class="mc-sub">3 reps &middot; 5G + 3T + 5C</div>
+  </div>
+  <div class="mc green">
+    <div class="mc-lbl">WTD Spiff Earned</div>
+    <div class="mc-val green">$13.00</div>
+    <div class="mc-sub green">$1.00 per add-on</div>
+  </div>
+  <div class="mc" style="border-left-color:var(--muted)">
+    <div class="mc-lbl">Spiff Rate</div>
+    <div class="mc-val" style="color:var(--muted);font-size:18px">$1 / unit</div>
+    <div class="mc-sub">Gloves $1 &middot; Towels $1 &middot; Coupons $1</div>
+  </div>
+</div>
+<div class="sec-lbl">Add-On Detail by Rep &mdash; WTD Week 24 Days 1&ndash;2</div><div class="tw"><table><thead><tr><th>Rep</th><th class="r">&#129399; Gloves</th><th class="r">&#129531; Towels</th><th class="r">&#127915; Coupons</th><th class="r">Total</th><th class="r">WTD Spiff $</th></tr></thead><tbody><tr><td class="name">MatthewO</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">LuisP</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">ZulemaA</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">IvanB</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">IsaacG</td><td class="r" style="font-weight:700;color:var(--cyan)">2</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="font-weight:700;color:var(--green)">2</td><td class="r" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--green)">$2.00</td></tr><tr><td class="name">MarioGO</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">FrankieL</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">JoannaZ</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">ManuelSe</td><td class="r" style="font-weight:700;color:var(--cyan)">1</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="font-weight:700;color:var(--green)">1</td><td class="r" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--green)">$1.00</td></tr><tr><td class="name">PaulinaN</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">KeinaJ</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">DavidO</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">OmarR</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">ArturoS</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">JacquelineS</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">CynthiaP</td><td class="r" style="font-weight:700;color:var(--cyan)">2</td><td class="r" style="font-weight:700;color:var(--cyan)">3</td><td class="r" style="font-weight:700;color:var(--cyan)">5</td><td class="r" style="font-weight:700;color:var(--green)">10</td><td class="r" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--green)">$10.00</td></tr><tr><td class="name">ApolonioA</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">TerenceR</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">ChristianH</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr><td class="name">JoseA</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td><td class="r" style="color:var(--muted)">—</td></tr><tr class="total-row"><td>WTD TOTAL</td><td class="r">5</td><td class="r">3</td><td class="r">5</td><td class="r">13</td><td class="r" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--green)">$13.00</td></tr></tbody></table></div><div style="font-size:10px;color:var(--muted);padding:8px 12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px">Source: SalesTeamReporting_IndividualLevel_20260609.xlsx &mdash; WTD Col C rows 10-12 (Gloves/Towels/Coupons). Days 1&ndash;2 (Jun 8&ndash;9). Day 3 pending.</div></div><script>
+function showTab(btn,id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+</script></body></html>
